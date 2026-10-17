@@ -1,18 +1,31 @@
 "use client";
-import HeroSection from './components/HeroSection';
-import ServicesSection from './components/ServicesSection';
-import AboutSection from './components/AboutSection';
-import ProjectSection from './components/ProjectSection';
-import ContactSection from './components/ContactSection';
+import dynamic from "next/dynamic";
+import IdeaHero from "./components/IdeaHero";
+import ProcessJourney from "./components/ProcessJourney";
+import Marquee from "./components/Marquee";
+import Services from "./components/Services";
+import Work from "./components/Work";
+import Studio from "./components/Studio";
+import Testimonials from "./components/Testimonials";
+import Contact from "./components/Contact";
 
-export default function page() {
+// WebGL is client-only; keep it out of SSR so first paint & SEO stay fast.
+const ParticleCanvas = dynamic(() => import("./components/three/ParticleCanvas"), {
+  ssr: false,
+});
+
+export default function Page() {
   return (
-    <div>
-      <HeroSection/>
-      <ServicesSection/>
-      <AboutSection/>
-      <ProjectSection/>
-      <ContactSection/>
-    </div>
-  )
+    <main className="relative min-h-screen bg-ink text-paper">
+      <ParticleCanvas />
+      <IdeaHero />
+      <ProcessJourney />
+      <Marquee />
+      <Services />
+      <Work />
+      <Studio />
+      <Testimonials />
+      <Contact />
+    </main>
+  );
 }
