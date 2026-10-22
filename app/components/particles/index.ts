@@ -1,6 +1,6 @@
-export { default as ParticleCanvas } from "./ParticleCanvas";
-export { default as WorkParticleScene } from "./WorkParticleScene";
-export { default as ServiceParticle } from "./ServiceParticle";
-export * from "./shapes";
-export * from "./sceneState";
+export { default as ParticleCanvas } from "../three/ParticleCanvas";
+export { default as WorkParticleScene, type WorkKind } from "../three/WorkParticleScene";
+export { default as ServiceParticle, type ServiceShapeKey } from "./ServiceParticle";
+export * from "../three/shapes";
+export * from "../three/sceneState";
 
