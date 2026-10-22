@@ -686,5 +686,5 @@ export function launchRocket(count: number) {
 // Backwards-compatibility alias
 export const launchGalaxy = launchRocket;
 
-export const SHAPES = [ideaSphere, brandMark, uiDevices, codeHelixTerminal, growthChart, launchRocket];
+export const SHAPES = [ideaSphere, brandMark, uiDevices, codeHelixTerminal, launchRocket, growthChart];
 

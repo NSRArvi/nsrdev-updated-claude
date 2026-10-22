@@ -16,7 +16,7 @@ const ParticleCanvas = dynamic(() => import("./components/three/ParticleCanvas")
 
 export default function Page() {
   return (
-    <main className="relative min-h-screen bg-ink text-paper">
+    <main className="relative min-h-screen w-full overflow-x-clip bg-ink text-paper">
       <ParticleCanvas />
       <IdeaHero />
       <ProcessJourney />

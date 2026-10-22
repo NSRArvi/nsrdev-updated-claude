@@ -33,24 +33,11 @@ function ParticleWordmark() {
     let raf = 0;
     const mouse = { x: -9999, y: -9999 };
 
-    const getPaletteFromCSS = () => {
-      const s = getComputedStyle(document.documentElement);
-      const read = (k: string, fb: string) => s.getPropertyValue(k).trim() || fb;
-      return {
-        ion: read("--color-ion", "#8b3dff"),
-        volt: read("--color-volt", "#c084fc"),
-        ember: read("--color-ember", "#ec38bc"),
-        aqua: read("--color-aqua", "#38bdf8"),
-        paper: read("--color-paper", "#f2f2ee"),
-      };
-    };
-
     const buildParticles = () => {
-      const palette = getPaletteFromCSS();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = canvas.getBoundingClientRect();
       const width = Math.max(280, Math.floor(rect.width));
-      const height = Math.max(90, Math.floor(width * 0.22));
+      const height = Math.max(100, Math.floor(width * 0.23));
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -62,31 +49,52 @@ function ParticleWordmark() {
       const octx = off.getContext("2d");
       if (!octx) return;
 
-      octx.clearRect(0, 0, width, height);
-      const fontSize = Math.floor(width * 0.215);
+      // Calibrate font size dynamically so "NSRDEV" spans the full max-w-7xl width edge-to-edge
+      octx.font = "900 100px sans-serif";
+      const measured = octx.measureText("NSRDEV").width;
+      const targetWidth = width * 0.99;
+      const fontSize = Math.floor((100 * targetWidth) / measured);
+
       octx.font = `900 ${fontSize}px sans-serif`;
       octx.textAlign = "center";
       octx.textBaseline = "middle";
-      octx.fillStyle = palette.paper;
-      octx.fillText("NSRDEV", width / 2, height * 0.54);
+      octx.fillStyle = "#ffffff";
+      octx.fillText("NSRDEV", width / 2, height * 0.52);
 
       const img = octx.getImageData(0, 0, width, height).data;
-      const step = width < 640 ? 3 : 5;
+      const step = width < 640 ? 3 : 4;
       const next: Particle[] = [];
+
+      // Helper to parse hex to RGB and interpolate smoothly across the wordmark width
+      const hexToRgb = (hex: string, fallback: [number, number, number]): [number, number, number] => {
+        const clean = hex.replace("#", "").trim();
+        if (clean.length !== 6) return fallback;
+        const num = parseInt(clean, 16);
+        return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+      };
+      const lerpRgb = (a: [number, number, number], b: [number, number, number], t: number) => {
+        const r = Math.round(a[0] + (b[0] - a[0]) * t);
+        const g = Math.round(a[1] + (b[1] - a[1]) * t);
+        const bl = Math.round(a[2] + (b[2] - a[2]) * t);
+        return `rgb(${r}, ${g}, ${bl})`;
+      };
+
+      const styles = getComputedStyle(document.documentElement);
+      const ionRgb = hexToRgb(styles.getPropertyValue("--color-ion"), [139, 61, 255]);    // #8b3dff
+      const voltRgb = hexToRgb(styles.getPropertyValue("--color-volt"), [192, 132, 252]); // #c084fc
+      const emberRgb = hexToRgb(styles.getPropertyValue("--color-ember"), [236, 56, 188]); // #ec38bc
 
       for (let y = 0; y < height; y += step) {
         for (let x = 0; x < width; x += step) {
           const alpha = img[(y * width + x) * 4 + 3];
           if (alpha > 128) {
-            const ratio = x / width;
+            // Smooth horizontal gradient: Electric Purple (left) -> Soft Violet (center) -> Neon Magenta (right)
+            const t = Math.min(1, Math.max(0, x / width));
             const color =
-              Math.random() < 0.12
-                ? palette.paper
-                : ratio < 0.45
-                ? palette.ion
-                : ratio < 0.75
-                ? palette.ember
-                : palette.aqua;
+              t < 0.5
+                ? lerpRgb(ionRgb, voltRgb, t * 2)
+                : lerpRgb(voltRgb, emberRgb, (t - 0.5) * 2);
+
             next.push({
               ox: x * dpr,
               oy: y * dpr,
@@ -94,7 +102,7 @@ function ParticleWordmark() {
               y: (y + (Math.random() - 0.5) * 30) * dpr,
               vx: 0,
               vy: 0,
-              size: (Math.random() * 1.2 + (width < 640 ? 1.0 : 1.2)) * dpr,
+              size: (Math.random() * 1.0 + (width < 640 ? 0.9 : 1.15)) * dpr,
               color,
               phase: Math.random() * Math.PI * 2,
             });
@@ -172,7 +180,7 @@ function ParticleWordmark() {
   }, []);
 
   return (
-    <div className="mx-auto mt-4 max-w-7xl px-2">
+    <div className="mx-auto mt-6 w-full max-w-7xl">
       <canvas
         ref={canvasRef}
         aria-label="NSRDEV"

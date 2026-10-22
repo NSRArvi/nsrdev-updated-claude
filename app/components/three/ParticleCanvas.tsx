@@ -111,7 +111,7 @@ export default function ParticleCanvas() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, isMobile ? 11 : 8);
+    camera.position.set(0, 0, isMobile ? 13 : 8);
 
     // Geometry: one attribute per stage shape
     const geo = new THREE.BufferGeometry();
@@ -180,9 +180,19 @@ export default function ParticleCanvas() {
       mat.uniforms.uTime.value = reduced ? 0 : t;
 
       // Smoothly position particle core on right side in Hero, center in Journey
-      const targetX = window.innerWidth < 1024 ? 0 : sceneState.offsetX;
+      const isSmallScreen = window.innerWidth < 1024;
+      const targetX = isSmallScreen ? 0 : sceneState.offsetX;
       gx += (targetX - gx) * 0.08;
       group.position.x = gx;
+
+      // On mobile/tablet: lift 3D core in Hero (above text) and center it in the open window between Top Story & Bottom Card in Journey
+      const heroBlend = Math.max(0, 1 - morph * 1.8);
+      const targetY = isSmallScreen ? 0.32 + heroBlend * 0.65 : 0;
+      group.position.y += (targetY - group.position.y) * 0.08;
+
+      const targetScale = isSmallScreen ? 0.72 + heroBlend * 0.1 : 1;
+      const curScale = group.scale.x + (targetScale - group.scale.x) * 0.08;
+      group.scale.setScalar(curScale);
 
       // Icon stages (Brain Lightbulb 0, Brand 1, UI 2) face forward towards camera with responsive pointer tilt; volumetric ones spin.
       const stage = Math.round(morph);

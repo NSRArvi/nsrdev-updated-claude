@@ -356,14 +356,13 @@ export default function Work() {
               </div>
 
               {/* Card Footer Metadata */}
-              <div className="mt-3.5 flex items-baseline justify-between gap-3 sm:mt-5">
+              <div className="mt-3.5 flex flex-col items-baseline justify-between gap-3 sm:mt-5">
                 <a
                   href={p.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group/title inline-flex items-center gap-2"
                 >
-                  <span className="font-mono text-xs text-volt">{p.id}</span>
                   <h3 className="font-display text-lg font-semibold text-paper transition-colors group-hover/title:text-volt sm:text-2xl">
                     {p.name}
                   </h3>

@@ -1,5 +1,5 @@
 "use client";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowDown } from "lucide-react";
@@ -7,14 +7,25 @@ import { sceneState } from "./three/sceneState";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const LINES = [
-  { text: "Got an idea?", cls: "text-paper" },
-  { text: "We build the", cls: "text-outline" },
-  { text: "world around it.", cls: "text-volt-gradient" },
+const ROTATING_PHRASES = [
+  "whole app.",
+  "next brand.",
+  "live site.",
+  "bold vision.",
+  "real thing.",
 ];
 
 export default function IdeaHero() {
   const root = useRef<HTMLElement>(null);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  // Rotating text timer every 3 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % ROTATING_PHRASES.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   useLayoutEffect(() => {
     sceneState.offsetX = 2.4;
@@ -24,7 +35,7 @@ export default function IdeaHero() {
         .from(".h-sub", { y: 24, opacity: 0, duration: 1 }, "-=0.9")
         .from(".h-meta", { opacity: 0, y: 10, stagger: 0.1, duration: 0.8 }, "-=0.6");
 
-      // Layered parallax on scroll-out + smoothly slide 3D particle sphere from right (2.4) to center (0)
+      // Parallax scroll-out + slide 3D particle sphere from right to center
       const st = { trigger: root.current, start: "top top", end: "bottom top", scrub: true };
       gsap.to(".h-l1", { yPercent: -80, ease: "none", scrollTrigger: st });
       gsap.to(".h-l2", { yPercent: -50, ease: "none", scrollTrigger: st });
@@ -39,33 +50,49 @@ export default function IdeaHero() {
     <section
       ref={root}
       id="home"
-      className="relative z-10 flex min-h-[100svh] items-center overflow-hidden px-4 pt-24 pb-16 sm:px-6 sm:pt-28"
+      className="relative z-10 flex min-h-[100svh] w-full flex-col justify-between overflow-hidden px-4 pt-24 pb-6 sm:px-6 sm:pt-28 sm:pb-10 lg:pt-32 lg:pb-12"
     >
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-12">
-        <div className="h-fade">
-          <h1 className="font-display text-[12.5vw] font-bold leading-[0.94] tracking-[-0.04em] sm:text-6xl md:text-7xl lg:text-[6.2rem]">
-            {LINES.map((l, i) => (
-              <span key={i} className={`h-l${i + 1} block overflow-hidden pb-1`}>
-                <span className={`h-word inline-block ${l.cls}`}>{l.text}</span>
+      {/* Main Hero Content: bottom-weighted on mobile so the 3D particle core shines in the upper space, centered on desktop */}
+      <div className="relative mx-auto mt-auto mb-6 grid w-full max-w-7xl items-center gap-6 sm:my-auto lg:grid-cols-[1.25fr_1fr] lg:gap-12">
+        <div className="h-fade max-w-2xl lg:max-w-none">
+          <h1 className="font-display text-[clamp(2.35rem,11vw,3.5rem)] sm:text-6xl md:text-7xl lg:text-[5.5rem] xl:text-[6.2rem] font-bold leading-[0.98] tracking-[-0.035em]">
+            {/* Line 1: Solid Fill */}
+            <span className="h-l1 block overflow-hidden pb-1">
+              <span className="h-word inline-block text-paper">Got an idea?</span>
+            </span>
+
+            {/* Line 2: Outline */}
+            <span className="h-l2 block overflow-hidden pb-1">
+              <span className="h-word inline-block text-outline">We build the</span>
+            </span>
+
+            {/* Line 3: Gradient with smooth 3-second rotating words */}
+            <span className="h-l3 relative block overflow-hidden whitespace-nowrap pb-1">
+              <span
+                key={phraseIndex}
+                className="h-word inline-block whitespace-nowrap text-volt-gradient transition-all duration-700 ease-out animate-in fade-in slide-in-from-bottom-6"
+              >
+                {ROTATING_PHRASES[phraseIndex]}
               </span>
-            ))}
+            </span>
           </h1>
 
-          <p className="h-sub mt-6 max-w-lg text-base leading-relaxed text-mist sm:mt-8 sm:text-lg">
+          <p className="h-sub mt-4 sm:mt-6 max-w-lg text-sm leading-relaxed text-mist sm:text-base lg:text-lg">
             NSRDEV is a full-cycle digital studio. Brand identity, UI/UX, engineering and growth marketing — one team, from first sketch to launch day.
           </p>
         </div>
 
-        {/* Right column reserved for the 3D particle sphere */}
+        {/* Right column reserved for the 3D particle sphere on desktop */}
         <div className="hidden min-h-[420px] lg:block" />
       </div>
 
-      <div className="h-fade absolute inset-x-0 bottom-5 mx-auto flex max-w-7xl items-center justify-between px-4 text-[10px] uppercase tracking-[0.22em] text-mist sm:bottom-6 sm:px-6 sm:text-[11px] sm:tracking-[0.25em]">
+      {/* Hero Bottom Meta Bar */}
+      <div className="h-fade mx-auto flex w-full max-w-7xl items-center justify-between border-t border-line/40 pt-3 sm:border-none sm:pt-4 text-[10px] uppercase tracking-[0.2em] text-mist sm:text-[11px] sm:tracking-[0.25em]">
         <span className="h-meta hidden sm:block">Dhaka · Working worldwide</span>
-        <a href="#journey" className="h-meta mx-auto flex items-center gap-2 hover:text-paper sm:mx-0">
+        <a href="#journey" className="h-meta flex items-center gap-1.5 sm:gap-2 hover:text-paper">
           Scroll to explore <ArrowDown className="h-3.5 w-3.5 animate-bounce" />
         </a>
-        <span className="h-meta hidden sm:block">Open for new projects</span>
+        <span className="h-meta text-volt/80 sm:text-mist">Open for new projects</span>
       </div>
     </section>
   );
