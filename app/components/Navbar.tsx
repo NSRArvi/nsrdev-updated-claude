@@ -1,32 +1,37 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight, Plus, X } from "lucide-react";
 import logoImg from "../assets/logo.png";
 
-const LINKS = [
-  { id: "journey", num: "01", label: "Journey", href: "#journey" },
-  { id: "services", num: "02", label: "Services", href: "#services" },
-  { id: "work", num: "03", label: "Work", href: "#work" },
-  { id: "studio", num: "04", label: "Studio", href: "#studio" },
-  { id: "contact", num: "05", label: "Contact", href: "#contact" },
+export const LINKS = [
+  { id: "journey", num: "01", label: "Journey", href: "/journey" },
+  { id: "services", num: "02", label: "Services", href: "/services" },
+  { id: "work", num: "03", label: "Work", href: "/work" },
+  { id: "studio", num: "04", label: "Studio", href: "/studio" },
+  { id: "contact", num: "05", label: "Contact", href: "/contact" },
 ];
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <a href="#home" className={`group inline-flex items-center ${className}`}>
+    <Link href="/" className={`group inline-flex items-center ${className}`}>
       <span className="relative h-9 w-28 sm:h-10 sm:w-32 overflow-hidden transition-transform duration-300 group-hover:scale-105">
         <Image src={logoImg} alt="NSRDEV" fill priority className="object-contain object-left" />
       </span>
-    </a>
+    </Link>
   );
 }
 
 export default function Navbar() {
-  const [active, setActive] = useState("home");
+  const pathname = usePathname();
+  const [scrollActive, setScrollActive] = useState("home");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    if (pathname !== "/") return;
+
     const sections = ["home", "journey", "services", "work", "studio", "contact"];
     const onScroll = () => {
       const probeY = window.innerHeight * 0.4;
@@ -43,7 +48,7 @@ export default function Navbar() {
           }
         }
       }
-      setActive(currentSection);
+      setScrollActive(currentSection);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -53,7 +58,12 @@ export default function Navbar() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [pathname]);
+
+  const active =
+    pathname === "/"
+      ? scrollActive
+      : LINKS.find((l) => pathname.startsWith(l.href))?.id ?? "";
 
   return (
     <>
@@ -72,7 +82,7 @@ export default function Navbar() {
             {LINKS.map((item) => {
               const isActive = active === item.id;
               return (
-                <a
+                <Link
                   key={item.id}
                   href={item.href}
                   className={`relative rounded-full px-4 py-1.5 text-xs font-medium tracking-wide transition-all duration-300 ${
@@ -83,15 +93,15 @@ export default function Navbar() {
                 >
                   <span className="mr-1 font-mono text-[10px] opacity-60">{item.num}</span>
                   {item.label}
-                </a>
+                </Link>
               );
             })}
           </nav>
 
           {/* Right Floating Action Node */}
           <div className="pointer-events-auto flex items-center gap-2">
-            <a
-              href="#contact"
+            <Link
+              href="/contact"
               className="group hidden items-center gap-2 rounded-full border border-line bg-ink/80 pl-4 pr-2.5 py-1.5 text-xs font-semibold text-paper backdrop-blur-xl transition-all duration-300 hover:border-ember/60 sm:inline-flex"
             >
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ember" />
@@ -99,7 +109,7 @@ export default function Navbar() {
               <span className="bg-brand-gradient grid h-6 w-6 place-items-center rounded-full text-paper transition-transform duration-300 group-hover:rotate-45">
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </span>
-            </a>
+            </Link>
 
             {/* Mobile & Tablet Menu Orb */}
             <button
@@ -129,27 +139,27 @@ export default function Navbar() {
         <ul className="relative space-y-2">
           {LINKS.map((item) => (
             <li key={item.id} className="border-b border-line pb-2">
-              <a
+              <Link
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className="group flex items-baseline justify-between py-2 font-display text-4xl font-bold tracking-tight text-paper transition-colors hover:text-volt sm:text-5xl"
               >
                 <span>{item.label}</span>
                 <span className="font-mono text-xs text-ember">{item.num}</span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
         <div className="relative space-y-4">
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             onClick={() => setOpen(false)}
             className="bg-brand-gradient shadow-brand-glow flex w-full items-center justify-center gap-2 rounded-full py-4 font-display text-base font-semibold text-paper"
           >
             <span>Start a Project</span>
             <ArrowUpRight className="h-4 w-4" />
-          </a>
+          </Link>
           <div className="flex items-center justify-between text-xs text-mist">
             <span>hello@nsrdev.com</span>
             <span>+880 1318-214398</span>

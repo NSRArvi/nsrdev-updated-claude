@@ -28,6 +28,8 @@ export default function IdeaHero() {
   }, []);
 
   useLayoutEffect(() => {
+    sceneState.visibility = 1;
+    sceneState.morph = 0;
     sceneState.offsetX = 2.4;
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "expo.out" } });

@@ -1,11 +1,37 @@
 "use client";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { Logo } from "./Navbar";
 
 const COLS = [
-  { h: "Studio", l: [["Journey", "#journey"], ["Services", "#services"], ["Work", "#work"], ["Studio", "#studio"]] },
-  { h: "Services", l: [["Brand Identity", "#services"], ["UI/UX Design", "#services"], ["Development", "#services"], ["SEO & Marketing", "#services"]] },
-  { h: "Connect", l: [["LinkedIn", "#"], ["Dribbble", "#"], ["Behance", "#"], ["GitHub", "#"]] },
+  {
+    h: "Studio",
+    l: [
+      ["Journey", "/journey"],
+      ["Services", "/services"],
+      ["Work", "/work"],
+      ["Studio", "/studio"],
+      ["Contact", "/contact"],
+    ],
+  },
+  {
+    h: "Services",
+    l: [
+      ["Brand Identity", "/services"],
+      ["UI/UX Design", "/services"],
+      ["Development", "/services"],
+      ["SEO & Marketing", "/services"],
+    ],
+  },
+  {
+    h: "Connect",
+    l: [
+      ["LinkedIn", "#"],
+      ["Dribbble", "#"],
+      ["Behance", "#"],
+      ["GitHub", "#"],
+    ],
+  },
 ];
 
 type Particle = {
@@ -205,7 +231,17 @@ export default function Footer() {
               <p className="text-xs uppercase tracking-[0.25em] text-mist">{c.h}</p>
               <ul className="mt-3.5 space-y-2.5 sm:mt-4">
                 {c.l.map(([t, h]) => (
-                  <li key={t}><a href={h} className="text-sm text-paper/80 transition-colors hover:text-volt">{t}</a></li>
+                  <li key={t}>
+                    {h.startsWith("/") ? (
+                      <Link href={h} className="text-sm text-paper/80 transition-colors hover:text-volt">
+                        {t}
+                      </Link>
+                    ) : (
+                      <a href={h} className="text-sm text-paper/80 transition-colors hover:text-volt">
+                        {t}
+                      </a>
+                    )}
+                  </li>
                 ))}
               </ul>
             </div>

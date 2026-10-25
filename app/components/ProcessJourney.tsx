@@ -200,6 +200,8 @@ export default function ProcessJourney() {
   const [active, setActive] = useState(0);
 
   useLayoutEffect(() => {
+    sceneState.visibility = 1;
+    sceneState.offsetX = 0;
     const ctx = gsap.context(() => {
       const last = STEPS.length - 1;
       ScrollTrigger.create({

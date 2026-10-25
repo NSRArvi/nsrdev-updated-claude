@@ -1,134 +1,12 @@
 "use client";
 import { useLayoutEffect, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
-import WorkParticleScene, { type WorkKind } from "./three/WorkParticleScene";
+import { PROJECTS } from "../data/projects";
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface ProjectItem {
-  id: string;
-  name: string;
-  category: string;
-  summary: string;
-  result: string;
-  url: string;
-  domain: string;
-  kind: WorkKind;
-  bg: string;
-  primaryVar: "ion" | "ember" | "volt" | "aqua";
-  secondaryVar: "ion" | "ember" | "volt" | "aqua";
-  tags: string[];
-}
-
-const PROJECTS: ProjectItem[] = [
-  {
-    id: "01",
-    name: "Bumrungrad Discover (DIMS)",
-    category: "Website & CRM",
-    summary:
-      "Official Bumrungrad Hospital referral platform & patient care CRM managing appointments, medical visas, and telemedicine across 18+ countries.",
-    result: "1,200+ Patients · 18+ Countries",
-    url: "https://www.discoverinternationalmedicalservice.com/",
-    domain: "discoverinternationalmedicalservice.com",
-    kind: "crm",
-    bg: "from-ion/35 via-surface to-ink",
-    primaryVar: "ion",
-    secondaryVar: "aqua",
-    tags: ["Healthcare CRM", "Patient Portal", "Next.js"],
-  },
-  {
-    id: "02",
-    name: "Laminax Bangladesh",
-    category: "Ecommerce Website",
-    summary:
-      "High-velocity beauty, skincare & cosmetics e-commerce storefront with live flash sales, cashback rewards, and instant nationwide checkout.",
-    result: "D2C Storefront · Live Inventory",
-    url: "https://www.laminax.com.bd/",
-    domain: "laminax.com.bd",
-    kind: "ecommerce-beauty",
-    bg: "from-ember/35 via-surface to-ink",
-    primaryVar: "ember",
-    secondaryVar: "volt",
-    tags: ["E-Commerce", "Reward Engine", "Fast Checkout"],
-  },
-  {
-    id: "03",
-    name: "The Caro App",
-    category: "Mobile App",
-    summary:
-      "Borderless national & international parcel delivery app connecting senders with verified riders via live GPS tracking and OTP escrow handoff.",
-    result: "50K+ Deliveries · 100+ Cities",
-    url: "https://thecaro.app/",
-    domain: "thecaro.app",
-    kind: "mobile-app",
-    bg: "from-aqua/35 via-surface to-ink",
-    primaryVar: "aqua",
-    secondaryVar: "ion",
-    tags: ["iOS & Android", "Live GPS Dispatch", "Escrow OTP"],
-  },
-  {
-    id: "04",
-    name: "Smart Kitchen & Bath",
-    category: "Ecommerce Website",
-    summary:
-      "Luxury Australian kitchen & bathroom e-commerce platform featuring architectural Shop-by-Room curation, multi-brand catalogs, and showroom booking.",
-    result: "Luxury AU Store · Curated Catalog",
-    url: "https://smartkitchenandbath.com.au/",
-    domain: "smartkitchenandbath.com.au",
-    kind: "ecommerce-luxury",
-    bg: "from-volt/35 via-surface to-ink",
-    primaryVar: "volt",
-    secondaryVar: "ember",
-    tags: ["Luxury Retail", "Shop by Room", "Australia"],
-  },
-  {
-    id: "05",
-    name: "Dynamic Exim Co. Ltd.",
-    category: "B2B Trade Website",
-    summary:
-      "Global garment accessories & export-import sourcing platform streamlining international textile supply chains, product catalogs, and buyer inquiries.",
-    result: "Global Sourcing · B2B Supply Chain",
-    url: "https://dynamic-exim.com/",
-    domain: "dynamic-exim.com",
-    kind: "global-trade",
-    bg: "from-ion/35 via-surface to-ink",
-    primaryVar: "ion",
-    secondaryVar: "ember",
-    tags: ["Export & Import", "B2B Portal", "Supply Chain"],
-  },
-  {
-    id: "06",
-    name: "Home Grow BD",
-    category: "AgriTech Website",
-    summary:
-      "Agricultural R&D, contract seed farming, and global seed export platform showcasing hybrid & open-pollinated vegetable seed varieties.",
-    result: "Seed R&D · International Export",
-    url: "https://homegrowbd.com/",
-    domain: "homegrowbd.com",
-    kind: "agritech",
-    bg: "from-aqua/35 via-surface to-ink",
-    primaryVar: "aqua",
-    secondaryVar: "volt",
-    tags: ["AgriTech R&D", "Seed Export", "Global Catalog"],
-  },
-  {
-    id: "07",
-    name: "SP ChinaBangla Mediaid",
-    category: "Healthcare Portal",
-    summary:
-      "Cross-border medical tourism & patient referral platform connecting Bangladesh with Yunnan Provincial Hospital of Chinese Medicine in China.",
-    result: "5,000+ Patients · 4.9★ Rated",
-    url: "https://spchinabanglamediaid.com/",
-    domain: "spchinabanglamediaid.com",
-    kind: "medical-bridge",
-    bg: "from-ember/35 via-surface to-ink",
-    primaryVar: "ember",
-    secondaryVar: "aqua",
-    tags: ["Medical Tourism", "Hospital Referral", "Telemedicine"],
-  },
-];
 
 export default function Work() {
   const root = useRef<HTMLElement>(null);
@@ -308,14 +186,22 @@ export default function Work() {
               onMouseEnter={() => setActiveIdx(idx)}
               className="work-card group relative flex w-[86vw] max-w-[420px] shrink-0 snap-center flex-col sm:w-[60vw] sm:max-w-[480px] lg:w-[44vw] lg:max-w-none xl:w-[38vw]"
             >
-              {/* 3D Three.js Particle Stage */}
+              {/* Project Preview Image Stage */}
               <div
                 className={`relative aspect-[16/10] w-full overflow-hidden rounded-3xl bg-gradient-to-br ${p.bg} ring-1 ring-line transition-all duration-500 group-hover:ring-volt/40`}
               >
-                <WorkParticleScene
-                  kind={p.kind}
-                  primaryVar={p.primaryVar}
-                  secondaryVar={p.secondaryVar}
+                <Image
+                  src={p.image}
+                  alt={p.name}
+                  fill
+                  sizes="(max-width: 640px) 86vw, (max-width: 1024px) 60vw, 44vw"
+                  className="object-contain object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+
+                {/* Subtle top & bottom gradient scrims so HUD badges remain crisp over bright screenshots */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/50 via-transparent to-ink/70"
                 />
 
                 {/* Top HUD Bar inside Card */}
